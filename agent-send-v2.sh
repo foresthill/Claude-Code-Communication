@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🚀 Agent間メッセージ送信スクリプト
+# 🚀 Agent間メッセージ送信スクリプト v2
 
 # 設定ファイル
 CONFIG_FILE="./tmp/project_config.txt"
@@ -29,7 +29,7 @@ get_project_info() {
 
 show_usage() {
     cat << EOF
-🤖 Agent間メッセージ送信
+🤖 Agent間メッセージ送信 v2
 
 使用方法:
   $0 [エージェント名] [メッセージ]
@@ -131,7 +131,7 @@ check_target() {
     
     if ! tmux has-session -t "$session_name" 2>/dev/null; then
         echo "❌ セッション '$session_name' が見つかりません"
-        echo "💡 ヒント: ./setup.sh を実行してセッションを作成してください"
+        echo "💡 ヒント: ./setup-v2.sh を実行してセッションを作成してください"
         return 1
     fi
     

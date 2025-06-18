@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🚀 Multi-Agent Communication Demo 環境構築
+# 🚀 Multi-Agent Communication Demo 環境構築 v2
 # 参考: setup_full_environment.sh
 
 set -e  # エラー時に停止
@@ -17,7 +17,7 @@ log_success() {
 # 使用方法表示
 show_usage() {
     cat << EOF
-🤖 Multi-Agent Communication Demo 環境構築
+🤖 Multi-Agent Communication Demo 環境構築 v2
 
 使用方法:
   $0 [プロジェクトディレクトリ]
@@ -50,8 +50,8 @@ else
     log_info "現在のディレクトリを使用: $PROJECT_DIR"
 fi
 
-echo "🤖 Multi-Agent Communication Demo 環境構築"
-echo "==========================================="
+echo "🤖 Multi-Agent Communication Demo 環境構築 v2"
+echo "============================================="
 echo ""
 
 # STEP 1: 既存セッションクリーンアップ
@@ -170,4 +170,9 @@ echo "     システム構造: CLAUDE.md"
 echo ""
 echo "  4. 🎯 デモ実行: PRESIDENTに「あなたはpresidentです。指示書に従って」と入力"
 echo ""
-echo "📁 作業ディレクトリ: $PROJECT_DIR" 
+echo "📁 作業ディレクトリ: $PROJECT_DIR"
+echo ""
+echo "💡 v2新機能:"
+echo "   - プロジェクトディレクトリ指定機能"
+echo "   - ステータス確認: ./agent-send-v2.sh --status"
+echo "   - 改善されたエラーハンドリング" 
