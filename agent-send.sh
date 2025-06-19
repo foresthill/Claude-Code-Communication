@@ -2,8 +2,11 @@
 
 # 🚀 Agent間メッセージ送信スクリプト
 
+# スクリプトのディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # 設定ファイル
-CONFIG_FILE="./tmp/project_config.txt"
+CONFIG_FILE="$SCRIPT_DIR/tmp/project_config.txt"
 
 # エージェント→tmuxターゲット マッピング
 get_agent_target() {
@@ -86,8 +89,8 @@ show_status() {
     get_project_info
     
     # ログファイル確認
-    if [[ -f "logs/send_log.txt" ]]; then
-        local log_lines=$(wc -l < logs/send_log.txt)
+    if [[ -f "$SCRIPT_DIR/logs/send_log.txt" ]]; then
+        local log_lines=$(wc -l < "$SCRIPT_DIR/logs/send_log.txt")
         echo "📝 送信ログ: $log_lines 件のメッセージ"
     else
         echo "📝 送信ログ: なし"
@@ -100,8 +103,8 @@ log_send() {
     local message="$2"
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     
-    mkdir -p logs
-    echo "[$timestamp] $agent: SENT - \"$message\"" >> logs/send_log.txt
+    mkdir -p "$SCRIPT_DIR/logs"
+    echo "[$timestamp] $agent: SENT - \"$message\"" >> "$SCRIPT_DIR/logs/send_log.txt"
 }
 
 # メッセージ送信

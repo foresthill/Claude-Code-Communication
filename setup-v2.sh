@@ -50,6 +50,9 @@ else
     log_info "現在のディレクトリを使用: $PROJECT_DIR"
 fi
 
+# スクリプトのディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🤖 Multi-Agent Communication Demo 環境構築 v2"
 echo "============================================="
 echo ""
@@ -91,7 +94,10 @@ PANE_TITLES=("boss1" "worker1" "worker2" "worker3")
 for i in {0..3}; do
     tmux select-pane -t "multiagent:0.$i" -T "${PANE_TITLES[$i]}"
     
-    # 作業ディレクトリ設定（プロジェクトディレクトリを使用）
+    # まずClaude-Code-CommunicationディレクトリでCLAUDE-v2.mdを表示
+    tmux send-keys -t "multiagent:0.$i" "cd \"$SCRIPT_DIR\" && cat CLAUDE-v2.md" C-m
+    
+    # その後、作業ディレクトリをプロジェクトディレクトリに設定
     tmux send-keys -t "multiagent:0.$i" "cd \"$PROJECT_DIR\"" C-m
     
     # カラープロンプト設定
@@ -115,7 +121,13 @@ echo ""
 log_info "👑 presidentセッション作成開始..."
 
 tmux new-session -d -s president
+
+# まずClaude-Code-CommunicationディレクトリでCLAUDE-v2.mdを表示
+tmux send-keys -t president "cd \"$SCRIPT_DIR\" && cat CLAUDE-v2.md" C-m
+
+# その後、作業ディレクトリをプロジェクトディレクトリに設定
 tmux send-keys -t president "cd \"$PROJECT_DIR\"" C-m
+
 tmux send-keys -t president "export PS1='(\[\033[1;35m\]PRESIDENT\[\033[0m\]) \[\033[1;32m\]\w\[\033[0m\]\$ '" C-m
 tmux send-keys -t president "echo '=== PRESIDENT セッション ==='" C-m
 tmux send-keys -t president "echo 'プロジェクト統括責任者'" C-m
@@ -163,10 +175,10 @@ echo "     # 手順2: 認証後、multiagent一括起動"
 echo "     for i in {0..3}; do tmux send-keys -t multiagent:0.\$i 'claude' C-m; done"
 echo ""
 echo "  3. 📜 指示書確認:"
-echo "     PRESIDENT: instructions/president.md"
-echo "     boss1: instructions/boss.md"
-echo "     worker1,2,3: instructions/worker.md"
-echo "     システム構造: CLAUDE.md"
+echo "     PRESIDENT: instructions/president-v2.md"
+echo "     boss1: instructions/boss-v2.md"
+echo "     worker1,2,3: instructions/worker-v2.md"
+echo "     システム構造: CLAUDE-v2.md"
 echo ""
 echo "  4. 🎯 デモ実行: PRESIDENTに「あなたはpresidentです。指示書に従って」と入力"
 echo ""
