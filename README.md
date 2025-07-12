@@ -47,7 +47,7 @@ cd Claude-Code-Communication
 ```bash
 tmux attach-session -t president
 claude
-# 起動後: あなたはpresidentです。@instructions/president.md の内容に従って行動してください。
+# 起動後: あなたはpresidentです。@.claude/organization/instructions/president.md の内容に従って行動してください。
 ```
 
 #### 5️⃣ 部下たちを一括起動（1分）
@@ -60,14 +60,14 @@ for i in {0..3}; do
   tmux send-keys -t multiagent.$i "claude" C-m
   sleep 1
   tmux send-keys -t multiagent.$i \
-    "あなたは\$([ \$i -eq 0 ] && echo boss1 || echo worker\$i)です。@instructions/\$([ \$i -eq 0 ] && echo boss.md || echo worker.md) の内容に従って行動してください。" C-m
+    "あなたは\$([ \$i -eq 0 ] && echo boss1 || echo worker\$i)です。@.claude/organization/instructions/\$([ \$i -eq 0 ] && echo boss.md || echo worker.md) の内容に従って行動してください。" C-m
 done
 ```
 
 #### 6️⃣ 開発開始！
 社長に入力：
 ```
-あなたはpresidentです。@instructions/president.md の内容に従って行動してください。
+あなたはpresidentです。@.claude/organization/instructions/president.md の内容に従って行動してください。
 
 [開発内容の指示]
 例：感情記録アプリを作成してください。Git Worktreeを活用した並行開発でお願いします。

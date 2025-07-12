@@ -15,13 +15,13 @@ fi
 INSTRUCTION_FILE=""
 case $ROLE in
     president)
-        INSTRUCTION_FILE="instructions/president.md"
+        INSTRUCTION_FILE=".claude/organization/instructions/president.md"
         ;;
     boss1)
-        INSTRUCTION_FILE="instructions/boss.md"
+        INSTRUCTION_FILE=".claude/organization/instructions/boss.md"
         ;;
     worker*)
-        INSTRUCTION_FILE="instructions/worker.md"
+        INSTRUCTION_FILE=".claude/organization/instructions/worker.md"
         ;;
     *)
         echo "Unknown role: $ROLE"

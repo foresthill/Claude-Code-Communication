@@ -71,6 +71,22 @@ rm -f ./tmp/worker*_done.txt 2>/dev/null && log_info "既存の完了ファイ�
 echo "$PROJECT_DIR" > ./tmp/project_config.txt
 log_info "プロジェクトディレクトリ情報を保存: $PROJECT_DIR"
 
+# STEP 1.5: プロジェクトディレクトリに指示書のシンボリックリンクを作成
+if [ "$PROJECT_DIR" != "$SCRIPT_DIR" ]; then
+    log_info "📄 指示書のシンボリックリンクを作成中..."
+    
+    # .claude/organizationディレクトリ作成
+    mkdir -p "$PROJECT_DIR/.claude/organization"
+    
+    # instructionsディレクトリへのシンボリックリンク作成
+    if [ ! -e "$PROJECT_DIR/.claude/organization/instructions" ]; then
+        ln -sf "$SCRIPT_DIR/instructions" "$PROJECT_DIR/.claude/organization/instructions"
+        log_success "指示書のリンク作成完了: .claude/organization/instructions"
+    else
+        log_info "指示書のリンクは既に存在します"
+    fi
+fi
+
 log_success "✅ クリーンアップ完了"
 echo ""
 
@@ -174,12 +190,12 @@ echo ""
 echo "  3. 🤖 Claude Code起動:"
 echo "     方法1（推奨）: ./start-all-agents.sh"
 echo "     方法2: 各セッションでclaude起動後、以下を入力:"
-echo "            「あなたは[役割]です。@instructions/[ファイル].md の内容に従って行動してください。」"
+echo "            「あなたは[役割]です。@.claude/organization/instructions/[ファイル].md の内容に従って行動してください。」"
 echo ""
 echo "  4. 📜 指示書確認:"
-echo "     PRESIDENT: instructions/president.md"
-echo "     boss1: instructions/boss.md (PM機能付き)"
-echo "     worker1,2,3: instructions/worker.md (Worktree対応)"
+echo "     PRESIDENT: .claude/organization/instructions/president.md"
+echo "     boss1: .claude/organization/instructions/boss.md (PM機能付き)"
+echo "     worker1,2,3: .claude/organization/instructions/worker.md (Worktree対応)"
 echo "     システム構造: CLAUDE.md"
 echo ""
 echo "  5. 🎯 開発開始: PRESIDENTに指示を入力"

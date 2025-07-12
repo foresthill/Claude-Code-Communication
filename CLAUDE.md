@@ -6,9 +6,9 @@
 - **worker1,2,3** (multiagent:0.1-3): 並行開発担当
 
 ## あなたの役割
-- **PRESIDENT**: @instructions/president.md
-- **boss1**: @instructions/boss.md
-- **worker1,2,3**: @instructions/worker.md
+- **PRESIDENT**: @.claude/organization/instructions/president.md
+- **boss1**: @.claude/organization/instructions/boss.md
+- **worker1,2,3**: @.claude/organization/instructions/worker.md
 
 ## Git Worktree開発フロー
 
