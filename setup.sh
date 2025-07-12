@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🚀 Multi-Agent Communication Demo 環境構築
+# 🚀 Multi-Agent Communication Demo 環境構築 v2
 # 参考: setup_full_environment.sh
 
 set -e  # エラー時に停止
@@ -14,8 +14,47 @@ log_success() {
     echo -e "\033[1;34m[SUCCESS]\033[0m $1"
 }
 
-echo "🤖 Multi-Agent Communication Demo 環境構築"
-echo "==========================================="
+# 使用方法表示
+show_usage() {
+    cat << EOF
+🤖 Multi-Agent Communication Demo 環境構築 v2
+
+使用方法:
+  $0 [プロジェクトディレクトリ]
+
+例:
+  $0 /path/to/your/project    # 指定したプロジェクトディレクトリで実行
+  $0                          # 現在のディレクトリで実行
+
+注意:
+  - プロジェクトディレクトリを指定すると、エージェントはそのディレクトリで作業します
+  - 指定しない場合は、現在のディレクトリが作業ディレクトリになります
+EOF
+}
+
+# 引数処理
+PROJECT_DIR=""
+if [[ $# -eq 1 ]]; then
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        show_usage
+        exit 0
+    fi
+    PROJECT_DIR="$1"
+    if [[ ! -d "$PROJECT_DIR" ]]; then
+        echo "❌ エラー: ディレクトリ '$PROJECT_DIR' が存在しません"
+        exit 1
+    fi
+    log_info "プロジェクトディレクトリ: $PROJECT_DIR"
+else
+    PROJECT_DIR="$(pwd)"
+    log_info "現在のディレクトリを使用: $PROJECT_DIR"
+fi
+
+# スクリプトのディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "🤖 Multi-Agent Communication Demo 環境構築 v2"
+echo "============================================="
 echo ""
 
 # STEP 1: 既存セッションクリーンアップ
@@ -27,6 +66,10 @@ tmux kill-session -t president 2>/dev/null && log_info "presidentセッション
 # 完了ファイルクリア
 mkdir -p ./tmp
 rm -f ./tmp/worker*_done.txt 2>/dev/null && log_info "既存の完了ファイルをクリア" || log_info "完了ファイルは存在しませんでした"
+
+# プロジェクトディレクトリ情報を保存
+echo "$PROJECT_DIR" > ./tmp/project_config.txt
+log_info "プロジェクトディレクトリ情報を保存: $PROJECT_DIR"
 
 log_success "✅ クリーンアップ完了"
 echo ""
@@ -51,8 +94,11 @@ PANE_TITLES=("boss1" "worker1" "worker2" "worker3")
 for i in {0..3}; do
     tmux select-pane -t "multiagent:0.$i" -T "${PANE_TITLES[$i]}"
     
-    # 作業ディレクトリ設定
-    tmux send-keys -t "multiagent:0.$i" "cd $(pwd)" C-m
+    # まずClaude-Code-CommunicationディレクトリでCLAUDE-v2.mdを表示
+    tmux send-keys -t "multiagent:0.$i" "cd \"$SCRIPT_DIR\" && cat CLAUDE-v2.md" C-m
+    
+    # その後、作業ディレクトリをプロジェクトディレクトリに設定
+    tmux send-keys -t "multiagent:0.$i" "cd \"$PROJECT_DIR\"" C-m
     
     # カラープロンプト設定
     if [ $i -eq 0 ]; then
@@ -65,6 +111,7 @@ for i in {0..3}; do
     
     # ウェルカムメッセージ
     tmux send-keys -t "multiagent:0.$i" "echo '=== ${PANE_TITLES[$i]} エージェント ==='" C-m
+    tmux send-keys -t "multiagent:0.$i" "echo '作業ディレクトリ: $PROJECT_DIR'" C-m
 done
 
 log_success "✅ multiagentセッション作成完了"
@@ -74,10 +121,17 @@ echo ""
 log_info "👑 presidentセッション作成開始..."
 
 tmux new-session -d -s president
-tmux send-keys -t president "cd $(pwd)" C-m
+
+# まずClaude-Code-CommunicationディレクトリでCLAUDE-v2.mdを表示
+tmux send-keys -t president "cd \"$SCRIPT_DIR\" && cat CLAUDE-v2.md" C-m
+
+# その後、作業ディレクトリをプロジェクトディレクトリに設定
+tmux send-keys -t president "cd \"$PROJECT_DIR\"" C-m
+
 tmux send-keys -t president "export PS1='(\[\033[1;35m\]PRESIDENT\[\033[0m\]) \[\033[1;32m\]\w\[\033[0m\]\$ '" C-m
 tmux send-keys -t president "echo '=== PRESIDENT セッション ==='" C-m
 tmux send-keys -t president "echo 'プロジェクト統括責任者'" C-m
+tmux send-keys -t president "echo '作業ディレクトリ: $PROJECT_DIR'" C-m
 tmux send-keys -t president "echo '========================'" C-m
 
 log_success "✅ presidentセッション作成完了"
@@ -121,9 +175,16 @@ echo "     # 手順2: 認証後、multiagent一括起動"
 echo "     for i in {0..3}; do tmux send-keys -t multiagent:0.\$i 'claude' C-m; done"
 echo ""
 echo "  3. 📜 指示書確認:"
-echo "     PRESIDENT: instructions/president.md"
-echo "     boss1: instructions/boss.md"
-echo "     worker1,2,3: instructions/worker.md"
-echo "     システム構造: CLAUDE.md"
+echo "     PRESIDENT: instructions/president-v2.md"
+echo "     boss1: instructions/boss-v2.md"
+echo "     worker1,2,3: instructions/worker-v2.md"
+echo "     システム構造: CLAUDE-v2.md"
 echo ""
-echo "  4. 🎯 デモ実行: PRESIDENTに「あなたはpresidentです。指示書に従って」と入力" 
+echo "  4. 🎯 デモ実行: PRESIDENTに「あなたはpresidentです。指示書に従って」と入力"
+echo ""
+echo "📁 作業ディレクトリ: $PROJECT_DIR"
+echo ""
+echo "💡 v2新機能:"
+echo "   - プロジェクトディレクトリ指定機能"
+echo "   - ステータス確認: ./agent-send-v2.sh --status"
+echo "   - 改善されたエラーハンドリング" 
