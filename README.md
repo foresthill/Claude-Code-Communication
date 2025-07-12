@@ -34,7 +34,7 @@ cd Claude-Code-Communication
 #### 2️⃣ 環境構築（1分）
 ```bash
 # v3版 - Git Worktree対応
-./setup-v3.sh [プロジェクトディレクトリ]
+./setup.sh [プロジェクトディレクトリ]
 ```
 
 #### 3️⃣ Worktree作成（30秒）
@@ -46,7 +46,7 @@ cd Claude-Code-Communication
 #### 4️⃣ 社長画面を開いてAI起動（2分）
 ```bash
 tmux attach-session -t president
-claude --additional-context instructions/president-v3.md
+claude --additional-context instructions/president.md
 ```
 
 #### 5️⃣ 部下たちを一括起動（1分）
@@ -54,7 +54,7 @@ claude --additional-context instructions/president-v3.md
 # 新しいターミナルで
 for i in {0..3}; do 
   tmux send-keys -t multiagent.$i \
-    "claude --additional-context instructions/\$([ \$i -eq 0 ] && echo boss-v3.md || echo worker-v3.md)" C-m
+    "claude --additional-context instructions/\$([ \$i -eq 0 ] && echo boss.md || echo worker.md)" C-m
 done
 ```
 
@@ -129,13 +129,13 @@ graph LR
 
 ```bash
 # 基本的な送信
-./agent-send-v3.sh boss1 "Worktreeの準備をお願いします"
+./agent-send.sh boss1 "Worktreeの準備をお願いします"
 
 # ステータス確認
-./agent-send-v3.sh --status
+./agent-send.sh --status
 
 # Worktree状況確認
-./agent-send-v3.sh --worktree-status
+./agent-send.sh --worktree-status
 ```
 
 ## 📁 重要なファイル（v3）
@@ -143,7 +143,7 @@ graph LR
 ### 新規追加
 - `worktree-setup.sh` - Worktree初期化
 - `worktree-merge.sh` - 統合とビルド
-- `instructions/*-v3.md` - 更新された指示書
+- `instructions/*.md` - 更新された指示書
 
 ### 設定ファイル
 ```json

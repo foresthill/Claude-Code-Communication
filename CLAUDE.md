@@ -6,9 +6,9 @@
 - **worker1,2,3** (multiagent:0.1-3): 並行開発担当
 
 ## あなたの役割
-- **PRESIDENT**: @instructions/president-v3.md
-- **boss1**: @instructions/boss-v3.md
-- **worker1,2,3**: @instructions/worker-v3.md
+- **PRESIDENT**: @instructions/president.md
+- **boss1**: @instructions/boss.md
+- **worker1,2,3**: @instructions/worker.md
 
 ## Git Worktree開発フロー
 
@@ -32,7 +32,7 @@
 
 ## メッセージ送信
 ```bash
-./agent-send-v3.sh [相手] "[メッセージ]"
+./agent-send.sh [相手] "[メッセージ]"
 ```
 
 ## 基本フロー
