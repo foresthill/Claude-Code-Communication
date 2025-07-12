@@ -1,9 +1,12 @@
-# Changelog
+# Changelog / 変更履歴
 
 All notable changes to Claude Code Communication project will be documented in this file.
+Claude Code Communicationプロジェクトの重要な変更はすべてこのファイルに記録されます。
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+[日本語版はこちら](CHANGELOG.ja.md)
 
 ## [3.0.0] - 2025-07-12
 
