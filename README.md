@@ -46,15 +46,21 @@ cd Claude-Code-Communication
 #### 4️⃣ 社長画面を開いてAI起動（2分）
 ```bash
 tmux attach-session -t president
-claude --additional-context instructions/president.md
+claude
+# 起動後: あなたはpresidentです。@instructions/president.md の内容に従って行動してください。
 ```
 
 #### 5️⃣ 部下たちを一括起動（1分）
 ```bash
-# 新しいターミナルで
+# 新しいターミナルで（スクリプトを使う場合）
+./start-all-agents.sh
+
+# または手動で
 for i in {0..3}; do 
+  tmux send-keys -t multiagent.$i "claude" C-m
+  sleep 1
   tmux send-keys -t multiagent.$i \
-    "claude --additional-context instructions/\$([ \$i -eq 0 ] && echo boss.md || echo worker.md)" C-m
+    "あなたは\$([ \$i -eq 0 ] && echo boss1 || echo worker\$i)です。@instructions/\$([ \$i -eq 0 ] && echo boss.md || echo worker.md) の内容に従って行動してください。" C-m
 done
 ```
 
