@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# 🚀 Agent間メッセージ送信スクリプト v2
+# 🚀 Agent間メッセージ送信スクリプト v3
+# Git Worktree対応版
 
 # スクリプトのディレクトリを取得
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -32,7 +33,7 @@ get_project_info() {
 
 show_usage() {
     cat << EOF
-🤖 Agent間メッセージ送信 v2
+🤖 Agent間メッセージ送信 v3
 
 使用方法:
   $0 [エージェント名] [メッセージ]
@@ -58,7 +59,7 @@ show_agents() {
     echo "📋 利用可能なエージェント:"
     echo "=========================="
     echo "  president → president:0     (プロジェクト統括責任者)"
-    echo "  boss1     → multiagent:0.0  (チームリーダー)"
+    echo "  boss1     → multiagent:0.0  (チームリーダー/PM)"
     echo "  worker1   → multiagent:0.1  (実行担当者A)"
     echo "  worker2   → multiagent:0.2  (実行担当者B)" 
     echo "  worker3   → multiagent:0.3  (実行担当者C)"
@@ -134,7 +135,7 @@ check_target() {
     
     if ! tmux has-session -t "$session_name" 2>/dev/null; then
         echo "❌ セッション '$session_name' が見つかりません"
-        echo "💡 ヒント: ./setup-v2.sh を実行してセッションを作成してください"
+        echo "💡 ヒント: ./setup.sh を実行してセッションを作成してください"
         return 1
     fi
     

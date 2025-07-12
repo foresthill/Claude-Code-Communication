@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# 🚀 Multi-Agent Communication Demo 環境構築 v2
-# 参考: setup_full_environment.sh
+# 🚀 Multi-Agent Communication Demo 環境構築 v3
+# Git Worktree対応版
 
 set -e  # エラー時に停止
 
@@ -17,7 +17,7 @@ log_success() {
 # 使用方法表示
 show_usage() {
     cat << EOF
-🤖 Multi-Agent Communication Demo 環境構築 v2
+🤖 Multi-Agent Communication Demo 環境構築 v3
 
 使用方法:
   $0 [プロジェクトディレクトリ]
@@ -26,9 +26,9 @@ show_usage() {
   $0 /path/to/your/project    # 指定したプロジェクトディレクトリで実行
   $0                          # 現在のディレクトリで実行
 
-注意:
-  - プロジェクトディレクトリを指定すると、エージェントはそのディレクトリで作業します
-  - 指定しない場合は、現在のディレクトリが作業ディレクトリになります
+説明:
+  - Git Worktree対応の並行開発環境を構築
+  - 各workerが独立したブランチで作業可能
 EOF
 }
 
@@ -53,7 +53,7 @@ fi
 # スクリプトのディレクトリを取得
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "🤖 Multi-Agent Communication Demo 環境構築 v2"
+echo "🤖 Multi-Agent Communication Demo 環境構築 v3"
 echo "============================================="
 echo ""
 
@@ -94,8 +94,8 @@ PANE_TITLES=("boss1" "worker1" "worker2" "worker3")
 for i in {0..3}; do
     tmux select-pane -t "multiagent:0.$i" -T "${PANE_TITLES[$i]}"
     
-    # まずClaude-Code-CommunicationディレクトリでCLAUDE-v2.mdを表示
-    tmux send-keys -t "multiagent:0.$i" "cd \"$SCRIPT_DIR\" && cat CLAUDE-v2.md" C-m
+    # まずClaude-Code-CommunicationディレクトリでCLAUDE.mdを表示
+    tmux send-keys -t "multiagent:0.$i" "cd \"$SCRIPT_DIR\" && cat CLAUDE.md" C-m
     
     # その後、作業ディレクトリをプロジェクトディレクトリに設定
     tmux send-keys -t "multiagent:0.$i" "cd \"$PROJECT_DIR\"" C-m
@@ -110,7 +110,7 @@ for i in {0..3}; do
     fi
     
     # ウェルカムメッセージ
-    tmux send-keys -t "multiagent:0.$i" "echo '=== ${PANE_TITLES[$i]} エージェント ==='" C-m
+    tmux send-keys -t "multiagent:0.$i" "echo '=== ${PANE_TITLES[$i]} エージェント (v3 Worktree対応) ==='" C-m
     tmux send-keys -t "multiagent:0.$i" "echo '作業ディレクトリ: $PROJECT_DIR'" C-m
 done
 
@@ -122,14 +122,14 @@ log_info "👑 presidentセッション作成開始..."
 
 tmux new-session -d -s president
 
-# まずClaude-Code-CommunicationディレクトリでCLAUDE-v2.mdを表示
-tmux send-keys -t president "cd \"$SCRIPT_DIR\" && cat CLAUDE-v2.md" C-m
+# まずClaude-Code-CommunicationディレクトリでCLAUDE.mdを表示
+tmux send-keys -t president "cd \"$SCRIPT_DIR\" && cat CLAUDE.md" C-m
 
 # その後、作業ディレクトリをプロジェクトディレクトリに設定
 tmux send-keys -t president "cd \"$PROJECT_DIR\"" C-m
 
 tmux send-keys -t president "export PS1='(\[\033[1;35m\]PRESIDENT\[\033[0m\]) \[\033[1;32m\]\w\[\033[0m\]\$ '" C-m
-tmux send-keys -t president "echo '=== PRESIDENT セッション ==='" C-m
+tmux send-keys -t president "echo '=== PRESIDENT セッション (v3) ==='" C-m
 tmux send-keys -t president "echo 'プロジェクト統括責任者'" C-m
 tmux send-keys -t president "echo '作業ディレクトリ: $PROJECT_DIR'" C-m
 tmux send-keys -t president "echo '========================'" C-m
@@ -152,7 +152,7 @@ echo ""
 # ペイン構成表示
 echo "📋 ペイン構成:"
 echo "  multiagentセッション（4ペイン）:"
-echo "    Pane 0: boss1     (チームリーダー)"
+echo "    Pane 0: boss1     (チームリーダー/PM)"
 echo "    Pane 1: worker1   (実行担当者A)"
 echo "    Pane 2: worker2   (実行担当者B)"
 echo "    Pane 3: worker3   (実行担当者C)"
@@ -164,27 +164,28 @@ echo ""
 log_success "🎉 Demo環境セットアップ完了！"
 echo ""
 echo "📋 次のステップ:"
-echo "  1. 🔗 セッションアタッチ:"
+echo "  1. 🌳 Git Worktree作成:"
+echo "     ./worktree-setup.sh $PROJECT_DIR [機能名]"
+echo ""
+echo "  2. 🔗 セッションアタッチ:"
 echo "     tmux attach-session -t multiagent   # マルチエージェント確認"
 echo "     tmux attach-session -t president    # プレジデント確認"
 echo ""
-echo "  2. 🤖 Claude Code起動:"
-echo "     # 手順1: President認証"
-echo "     tmux send-keys -t president 'claude' C-m"
-echo "     # 手順2: 認証後、multiagent一括起動"
-echo "     for i in {0..3}; do tmux send-keys -t multiagent:0.\$i 'claude' C-m; done"
+echo "  3. 🤖 Claude Code起動:"
+echo "     # 各セッションで実行"
+echo "     claude --additional-context instructions/[role].md"
 echo ""
-echo "  3. 📜 指示書確認:"
-echo "     PRESIDENT: instructions/president-v2.md"
-echo "     boss1: instructions/boss-v2.md"
-echo "     worker1,2,3: instructions/worker-v2.md"
-echo "     システム構造: CLAUDE-v2.md"
+echo "  4. 📜 指示書確認:"
+echo "     PRESIDENT: instructions/president.md"
+echo "     boss1: instructions/boss.md (PM機能付き)"
+echo "     worker1,2,3: instructions/worker.md (Worktree対応)"
 echo ""
-echo "  4. 🎯 デモ実行: PRESIDENTに「あなたはpresidentです。指示書に従って」と入力"
+echo "  5. 🎯 開発開始: PRESIDENTに指示を入力"
 echo ""
 echo "📁 作業ディレクトリ: $PROJECT_DIR"
 echo ""
-echo "💡 v2新機能:"
-echo "   - プロジェクトディレクトリ指定機能"
-echo "   - ステータス確認: ./agent-send-v2.sh --status"
-echo "   - 改善されたエラーハンドリング" 
+echo "💡 v3新機能:"
+echo "   - Git Worktree統合"
+echo "   - 並行開発サポート"
+echo "   - 自動マージ機能"
+echo "   - ビルド検証" 

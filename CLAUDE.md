@@ -1,58 +1,107 @@
-# Agent Communication System v2
+# Agent Communication System v3 - Git Worktree対応版
 
 ## エージェント構成
 - **PRESIDENT** (別セッション): 統括責任者
-- **boss1** (multiagent:0.0): チームリーダー
-- **worker1,2,3** (multiagent:0.1-3): 実行担当
+- **boss1** (multiagent:0.0): チームリーダー・PM
+- **worker1,2,3** (multiagent:0.1-3): 並行開発担当
 
 ## あなたの役割
-- **PRESIDENT**: @instructions/president-v2.md
-- **boss1**: @instructions/boss-v2.md
-- **worker1,2,3**: @instructions/worker-v2.md
+- **PRESIDENT**: @instructions/president-v3.md
+- **boss1**: @instructions/boss-v3.md
+- **worker1,2,3**: @instructions/worker-v3.md
 
-## メッセージ送信（v2）
+## Git Worktree開発フロー
+
+### 1. プロジェクト開始
 ```bash
-./agent-send-v2.sh [相手] "[メッセージ]"
+# Worktree作成
+./worktree-setup.sh . [機能名]
+```
+
+### 2. 並行開発
+各workerが独立したWorktreeで開発：
+- worker1: `.worktrees/worker1-[機能名]/`
+- worker2: `.worktrees/worker2-[機能名]/`
+- worker3: `.worktrees/worker3-[機能名]/`
+
+### 3. 統合とマージ
+```bash
+# 全ブランチをマージ
+./worktree-merge.sh [機能名]
+```
+
+## メッセージ送信
+```bash
+./agent-send-v3.sh [相手] "[メッセージ]"
 ```
 
 ## 基本フロー
-PRESIDENT → boss1 → workers → boss1 → PRESIDENT 
-
-## 🆕 v2新機能
-
-### プロジェクトディレクトリ指定
-- エージェントは指定されたプロジェクトディレクトリで作業
-- 実際のプロジェクトファイルにアクセス可能
-- 生成されたコードが適切な場所に配置される
-
-### ステータス確認
-```bash
-./agent-send-v2.sh --status    # システム状態確認
-./agent-send-v2.sh --list      # エージェント一覧表示
+```
+PRESIDENT 
+  ↓ (ビジョン)
+boss1 
+  ↓ (Worktree作成・タスク分配)
+workers (並行開発)
+  ↓ (完了報告)
+boss1 (マージ・ビルド検証)
+  ↓ (統合報告)
+PRESIDENT
 ```
 
-### 設定ファイル
-- `tmp/project_config.txt`: プロジェクトディレクトリ情報を保存
-- システム状態の永続化
+## 🆕 v3新機能
 
-## 📁 作業ディレクトリ
-エージェントは `tmp/project_config.txt` に保存されたプロジェクトディレクトリで作業します。
+### Git Worktree統合
+- 各workerが独立したブランチで開発
+- 真の並行開発の実現
+- コンフリクトの最小化
 
-## 🔧 環境構築（v2）
-```bash
-./setup-v2.sh [プロジェクトディレクトリ]
+### 自動マージ機能
+- PMによる統合作業の自動化
+- コンフリクト解決支援
+- マージ戦略の最適化
+
+### ビルド検証
+- 統合後の自動ビルド
+- テスト実行
+- デプロイ準備の確認
+
+## 開発のベストプラクティス
+
+### コミット規約
+```
+feat: 新機能
+fix: バグ修正
+docs: ドキュメント
+style: スタイル変更
+refactor: リファクタリング
+test: テスト
+chore: その他
 ```
 
-例：
+### ブランチ戦略
+- `main`: 本番環境
+- `develop`: 開発統合
+- `worker*/feature-*`: 各worker機能ブランチ
+
+## トラブルシューティング
+
+### Worktree関連
 ```bash
-./setup-v2.sh /path/to/your/project    # 指定したプロジェクトディレクトリで実行
-./setup-v2.sh                          # 現在のディレクトリで実行
+# Worktree一覧
+git worktree list
+
+# Worktree削除
+git worktree remove .worktrees/worker1-[機能名]
+
+# ブランチ確認
+git branch -a
 ```
 
-## 💡 推奨使用方法
-1. 開発プロジェクトディレクトリに移動
-2. Claude-Code-Communicationをサブディレクトリとして配置
-3. `./setup-v2.sh ..` で環境構築
-4. プロジェクトディレクトリに戻ってエージェント起動
+### マージコンフリクト
+1. 該当workerに解決依頼
+2. 手動解決
+3. 再度マージ実行
 
-これにより、エージェントが実際のプロジェクトファイルにアクセスでき、より実用的な開発が可能になります。 
+## 設定ファイル
+- `.claude/settings.json`: プロジェクト設定
+- `.claude/settings.local.json`: ローカル設定（Git無視）
