@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [日本語版はこちら](CHANGELOG.ja.md)
 
+## [3.0.1] - 2025-07-12
+
+### 🚀 Added
+- **Detailed Git Worktree Documentation**: Added `instructions/boss-worktree-addon.md`
+  - Step-by-step Worktree creation process
+  - Merge and build verification procedures
+  - Conflict resolution guidelines
+  - Best practices and troubleshooting
+- **Enhanced boss.md**: Added reference to worktree addon documentation
+- **Context Recovery Guide**: Added `docs/CONTEXT_RECOVERY_GUIDE.md`
+- **File Placement Guide**: Added `docs/FILE_PLACEMENT_GUIDE.md`
+
+### 📚 Documentation
+- Clarified separation between framework and project-specific files
+- Added guidance for handling AI context loss
+- Documented session naming conventions for different projects
+
 ## [3.0.0] - 2025-07-12
 
 ### 🚀 Added

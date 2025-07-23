@@ -1,19 +1,13 @@
-# 🤖 Claude Code エージェント通信システム v3
+# 🤖 Claude Code エージェント通信システム v1
 
-**Git Worktree対応版** - 真の並行開発を実現する進化版
+**基本版** - AIエージェント協調開発の基礎
 
 ## 📌 これは何？
 
 **3行で説明すると：**
-1. 複数のAIエージェント（社長・マネージャー・作業者）が**独立した開発環境**で協力
-2. **Git Worktree**により各開発者が干渉なく並行開発
-3. マネージャーが全員の成果を統合し、ビルド検証まで自動実行
-
-**v3の新機能：**
-- 🌳 **Git Worktree統合**: 各workerが独立したブランチで開発
-- 🔄 **自動マージ機能**: PMが全ブランチを統合
-- 🔨 **ビルド検証**: npm build, vercel buildの自動実行
-- 🎯 **コンフリクト解決支援**: 問題発生時の自動通知
+1. 複数のAIエージェント（社長・マネージャー・作業者）が協力して開発
+2. tmuxベースの画面分割で同時にAIを起動
+3. 社長の指示が自動的に部下に伝達される仕組み
 
 ## 🎬 5分で動かしてみよう！
 
@@ -52,12 +46,15 @@ claude
 
 #### 5️⃣ 部下たちを一括起動（1分）
 ```bash
-# 新しいターミナルで（スクリプトを使う場合）
+# 新しいターミナルで（推奨：権限スキップ版）
+./start-all-agents-quick.sh
+
+# または通常版
 ./start-all-agents.sh
 
 # または手動で
 for i in {0..3}; do 
-  tmux send-keys -t multiagent.$i "claude" C-m
+  tmux send-keys -t multiagent.$i "claude --dangerously-skip-permissions" C-m
   sleep 1
   tmux send-keys -t multiagent.$i \
     "あなたは\$([ \$i -eq 0 ] && echo boss1 || echo worker\$i)です。@.claude/organization/instructions/\$([ \$i -eq 0 ] && echo boss.md || echo worker.md) の内容に従って行動してください。" C-m
@@ -149,8 +146,10 @@ graph LR
 ## 📁 重要なファイル（v3）
 
 ### 新規追加
-- `worktree-setup.sh` - Worktree初期化
+- `worktree-setup.sh` - Worktree初期化（再利用/強制再作成対応）
 - `worktree-merge.sh` - 統合とビルド
+- `start-all-agents-quick.sh` - 権限スキップで全エージェント起動
+- `start-agents.sh` - 個別エージェント起動（権限スキップオプション付き）
 - `instructions/*.md` - 更新された指示書
 
 ### 設定ファイル
@@ -177,8 +176,23 @@ graph LR
 
 ## 🔧 トラブルシューティング
 
+### Claude起動時のエラー
+```bash
+# エラー: "instructions/president.md not found"
+# 解決: シンボリックリンクが作成されているか確認
+ls -la /path/to/project/.claude/organization/
+# instructionsディレクトリへのリンクがあるはず
+```
+
 ### Worktree関連
 ```bash
+# エラー: "worktree already exists"
+# 解決1: 既存を再利用（デフォルト）
+./worktree-setup.sh /path/to/project feature-name
+
+# 解決2: 強制再作成
+./worktree-setup.sh /path/to/project feature-name --force
+
 # Worktree一覧
 git worktree list
 
@@ -197,6 +211,16 @@ git mergetool
 
 # マージ中止
 git merge --abort
+```
+
+### tmuxセッション問題
+```bash
+# セッションが見つからない
+tmux ls  # 一覧確認
+./setup.sh /path/to/project  # 再作成
+
+# エージェントが起動していない
+./start-all-agents-quick.sh  # 一括起動
 ```
 
 ## 📊 パフォーマンス

@@ -14,6 +14,8 @@
 
 ## Git Worktree管理
 
+**📌 重要**: 詳細な手順は @boss-worktree-addon.md を参照
+
 ### 1. プロジェクト開始時のWorktree作成
 ```bash
 # 機能名を決定してWorktreeを作成
@@ -176,3 +178,22 @@ cd .worktrees/worker1-[機能名]
 - 継続的インテグレーションの実践
 - ビルド検証による品質保証
 - チームの創造性と技術力の最大化
+
+## ファイル配置ルール
+**重要**: プロジェクトルートに直接ファイルを作成しない
+
+### レポート・ログファイルの配置
+- **レポート**: `.claude/organization/reports/`に配置
+- **ログ**: `.claude/organization/logs/`に配置
+- **一時ファイル**: `.claude/organization/tmp/`に配置
+
+### 例
+```bash
+# ❌ 間違い
+echo "レポート内容" > query_boss1_git_status.md
+
+# ✅ 正しい
+echo "レポート内容" > .claude/organization/reports/query_boss1_git_status.md
+```
+
+詳細は `docs/FILE_PLACEMENT_GUIDE.md` を参照してください。

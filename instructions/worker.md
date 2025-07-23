@@ -241,3 +241,23 @@ describe('感情記録統合テスト', () => {
 - **積極性**: コンフリクトを恐れない果敢な実装
 - **品質**: マージ前の徹底的なテスト
 - **透明性**: 進捗と課題の迅速な共有
+
+## ファイル配置ルール
+**重要**: プロジェクトルートに直接ファイルを作成しない
+
+### 作業ファイルの配置
+- **ドキュメント**: `docs/`に配置
+- **テストレポート**: `.claude/organization/reports/`に配置
+- **作業ログ**: `.claude/organization/logs/`に配置
+- **一時ファイル**: `.claude/organization/tmp/`に配置
+
+### 例
+```bash
+# ❌ 間違い
+echo "テスト結果" > test_report.md
+
+# ✅ 正しい
+echo "テスト結果" > .claude/organization/reports/test_report_$(date +%Y%m%d).md
+```
+
+詳細は `docs/FILE_PLACEMENT_GUIDE.md` を参照してください。
