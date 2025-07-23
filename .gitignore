@@ -17,4 +17,19 @@ Thumbs.db
 *.swo
 *~
 .vscode/
-.idea/ 
+.idea/
+
+# Claude組織設定
+# ===============
+
+# ローカル設定
+.claude/settings.local.json
+
+# プロジェクト設定（パス情報含む）
+tmp/project_config.txt
+
+# Git Worktree
+.worktrees/
+
+# tmux
+*.tmux.log 

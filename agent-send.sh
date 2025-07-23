@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# 🚀 Agent間メッセージ送信スクリプト
+# 🚀 Agent間メッセージ送信スクリプト v3
+# Git Worktree対応版
+
+# スクリプトのディレクトリを取得
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 設定ファイル
+CONFIG_FILE="$SCRIPT_DIR/tmp/project_config.txt"
 
 # エージェント→tmuxターゲット マッピング
 get_agent_target() {
@@ -14,13 +21,24 @@ get_agent_target() {
     esac
 }
 
+# プロジェクトディレクトリ情報を取得
+get_project_info() {
+    if [[ -f "$CONFIG_FILE" ]]; then
+        local project_dir=$(head -n 1 "$CONFIG_FILE" 2>/dev/null)
+        if [[ -n "$project_dir" ]]; then
+            echo "📁 プロジェクトディレクトリ: $project_dir"
+        fi
+    fi
+}
+
 show_usage() {
     cat << EOF
-🤖 Agent間メッセージ送信
+🤖 Agent間メッセージ送信 v3
 
 使用方法:
   $0 [エージェント名] [メッセージ]
   $0 --list
+  $0 --status
 
 利用可能エージェント:
   president - プロジェクト統括責任者
@@ -41,10 +59,43 @@ show_agents() {
     echo "📋 利用可能なエージェント:"
     echo "=========================="
     echo "  president → president:0     (プロジェクト統括責任者)"
-    echo "  boss1     → multiagent:0.0  (チームリーダー)"
+    echo "  boss1     → multiagent:0.0  (チームリーダー/PM)"
     echo "  worker1   → multiagent:0.1  (実行担当者A)"
     echo "  worker2   → multiagent:0.2  (実行担当者B)" 
     echo "  worker3   → multiagent:0.3  (実行担当者C)"
+    echo ""
+    get_project_info
+}
+
+# ステータス表示
+show_status() {
+    echo "🔍 システムステータス:"
+    echo "====================="
+    
+    # セッション確認
+    echo "📺 Tmux Sessions:"
+    if tmux has-session -t president 2>/dev/null; then
+        echo "  ✅ president: 実行中"
+    else
+        echo "  ❌ president: 停止中"
+    fi
+    
+    if tmux has-session -t multiagent 2>/dev/null; then
+        echo "  ✅ multiagent: 実行中"
+    else
+        echo "  ❌ multiagent: 停止中"
+    fi
+    
+    echo ""
+    get_project_info
+    
+    # ログファイル確認
+    if [[ -f "$SCRIPT_DIR/logs/send_log.txt" ]]; then
+        local log_lines=$(wc -l < "$SCRIPT_DIR/logs/send_log.txt")
+        echo "📝 送信ログ: $log_lines 件のメッセージ"
+    else
+        echo "📝 送信ログ: なし"
+    fi
 }
 
 # ログ記録
@@ -53,8 +104,8 @@ log_send() {
     local message="$2"
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     
-    mkdir -p logs
-    echo "[$timestamp] $agent: SENT - \"$message\"" >> logs/send_log.txt
+    mkdir -p "$SCRIPT_DIR/logs"
+    echo "[$timestamp] $agent: SENT - \"$message\"" >> "$SCRIPT_DIR/logs/send_log.txt"
 }
 
 # メッセージ送信
@@ -84,6 +135,7 @@ check_target() {
     
     if ! tmux has-session -t "$session_name" 2>/dev/null; then
         echo "❌ セッション '$session_name' が見つかりません"
+        echo "💡 ヒント: ./setup.sh を実行してセッションを作成してください"
         return 1
     fi
     
@@ -100,6 +152,12 @@ main() {
     # --listオプション
     if [[ "$1" == "--list" ]]; then
         show_agents
+        exit 0
+    fi
+    
+    # --statusオプション
+    if [[ "$1" == "--status" ]]; then
+        show_status
         exit 0
     fi
     
