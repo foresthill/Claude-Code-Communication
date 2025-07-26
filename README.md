@@ -359,6 +359,128 @@ sleep 600  # 10分を5分に変更するなら
 sleep 300
 ```
 
+## 📚 物語執筆チーム版
+
+AIチームが協力して物語を創作する、出版社のようなワークフローを実現！
+
+### 🎭 物語執筆チームの特徴
+
+**チーム構成：**
+- 📚 **編集長**（Editor-in-Chief）: 企画立案、テーマ設定、最終承認
+- 📝 **編集者**（Editor）: プロット作成、進行管理、チーム調整
+- ✍️ **天才ライター**（Writer）: 初稿執筆、文章創作
+- 🔧 **敏腕編集者**（Copy Editor）: 文章編集、構成改善、推敲
+- 🔍 **校正者**（Proofreader）: 最終校正、品質保証
+
+### 🚀 物語執筆チームの起動方法
+
+#### 1️⃣ ブランチ切り替え（初回のみ）
+```bash
+git checkout feature/story-writing
+```
+
+#### 2️⃣ 環境構築（通常版と同じ）
+```bash
+./setup.sh
+```
+
+#### 3️⃣ Claude起動（通常版と同じ）
+```bash
+# 編集長（president）
+tmux attach-session -t president
+claude --dangerously-skip-permissions
+
+# チームメンバー一括起動（別ターミナル）
+for i in {0..3}; do 
+  tmux send-keys -t multiagent:0.$i 'claude --dangerously-skip-permissions' C-m
+done
+```
+
+#### 4️⃣ 役割の自動送信（物語版専用）
+```bash
+./story-team-start.sh
+```
+
+#### 5️⃣ 物語企画を開始
+```bash
+./agent-send-story.sh editor-in-chief "短編小説を企画してください。テーマは『時を超えた約束』です。"
+```
+
+### 📊 物語版の専用ツール
+
+**進捗管理：**
+```bash
+# 現在の進捗確認
+./story-status.sh --current
+
+# 進捗更新（例：執筆50%完了）
+./story-status.sh --update writing 50
+
+# 詳細レポート生成
+./story-status.sh --report > progress_report.md
+```
+
+**バージョン管理：**
+```bash
+# 原稿を保存
+./story-version.sh save story.md "第1章完成"
+
+# バージョン一覧
+./story-version.sh list
+
+# 差分確認
+./story-version.sh diff story_v1.md story_v2.md
+
+# バージョン復元
+./story-version.sh restore story_v1.md
+```
+
+**拡張メッセージ送信：**
+```bash
+# 通常のメッセージ
+./agent-send-story.sh writer "執筆をお願いします"
+
+# ファイル添付
+./agent-send-story.sh copy-editor "初稿です" --attach stories/drafts/story_v1.md
+```
+
+### 📁 物語版のディレクトリ構造
+```
+.claude/organization/
+├── stories/        # 原稿管理
+│   ├── drafts/     # 初稿・下書き
+│   ├── revisions/  # 編集中原稿
+│   └── final/      # 完成原稿
+├── plots/          # プロット・構成案
+├── notes/          # 設定・メモ
+├── reports/        # レポート
+└── logs/           # 作業ログ
+```
+
+### 🎯 物語創作のワークフロー
+```
+編集長「テーマは『贖罪』です」
+　↓
+編集者「三幕構成でプロットを作成します」
+　↓
+ライター「冒頭：雨が降りしきる夜...」
+　↓
+敏腕編集者「構成を改善しました」
+　↓
+校正者「最終チェック完了」
+　↓
+編集長「素晴らしい作品が完成しました！」
+```
+
+### 💡 通常版との違い
+
+| 項目 | 通常版（開発） | 物語版（執筆） |
+|------|--------------|--------------|
+| ワークフロー | 並行作業 | 順次作業 |
+| 成果物 | プログラム | 物語 |
+| 品質基準 | テスト・性能 | 文章・感動 |
+| ツール | コード管理 | 原稿管理 |
+
 ## 🌟 まとめ
 
 このシステムは、複数のAIが協力することで：
