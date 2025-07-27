@@ -13,13 +13,17 @@ NC='\033[0m' # No Color
 AGENT_SEND="./agent-send.sh"
 
 # エージェントマッピング（物語執筆用）
-declare -A STORY_AGENTS=(
-    ["editor-in-chief"]="president"
-    ["editor"]="boss1"
-    ["writer"]="worker1"
-    ["copy-editor"]="worker2"
-    ["proofreader"]="worker3"
-)
+# 連想配列の代わりに関数で実装
+get_story_agent_target() {
+    case "$1" in
+        "editor-in-chief") echo "president" ;;
+        "editor") echo "boss1" ;;
+        "writer") echo "worker1" ;;
+        "copy-editor") echo "worker2" ;;
+        "proofreader") echo "worker3" ;;
+        *) echo "" ;;
+    esac
+}
 
 # 使用方法を表示
 show_usage() {
@@ -165,10 +169,10 @@ main() {
     done
     
     # エージェント名の変換
-    local real_agent="${STORY_AGENTS[$story_agent]}"
+    local real_agent=$(get_story_agent_target "$story_agent")
     if [[ -z "$real_agent" ]]; then
         echo -e "${RED}エラー: 不明なエージェント '$story_agent'${NC}"
-        echo "利用可能なエージェント: ${!STORY_AGENTS[@]}"
+        echo "利用可能なエージェント: editor-in-chief editor writer copy-editor proofreader"
         exit 1
     fi
     
